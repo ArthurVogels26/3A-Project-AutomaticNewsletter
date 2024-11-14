@@ -1,3 +1,5 @@
+
+import re
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -7,6 +9,10 @@ from urllib.parse import urlparse
 
 
 class DataExtractor:
+    def __init__(self):
+        # Utiliser une session pour réutiliser les connexions HTTP
+        self.session = requests.Session()
+
     def extract_arxiv(self, arxiv_id):
         # Récupérer les métadonnées via l'API arXiv
         url = f'https://export.arxiv.org/api/query?id_list={arxiv_id}'
@@ -76,21 +82,14 @@ class DataExtractor:
         readme_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/readme'
         readme_response = requests.get(readme_url, headers={'Accept': 'application/vnd.github.v3.raw'})
         if readme_response.status_code == 200:
-            data['readme'] = readme_response.text
+            data['content'] = readme_response.text
         else:
-            data['readme'] = "README non disponible."
+            data['content'] = "README non disponible."
 
         return data
 
-    def extract_huggingface(self, model_url):
-        # Extraire l'ID du modèle à partir de l'URL
-        parsed_url = urlparse(model_url)
-        path_parts = parsed_url.path.strip('/').split('/')
-        if len(path_parts) < 2:
-            raise ValueError("URL HuggingFace invalide. Format attendu : https://huggingface.co/owner/model")
-        model_id = '/'.join(path_parts[:2])
-
-        # Récupérer les métadonnées via l'endpoint HuggingFace
+    def extract_huggingface_model(self, model_id):
+        # Récupérer les métadonnées via l'API HuggingFace
         api_url = f'https://huggingface.co/api/models/{model_id}'
         response = requests.get(api_url)
         if response.status_code != 200:
@@ -108,23 +107,82 @@ class DataExtractor:
         }
 
         # Tenter de récupérer le README via les URLs bruts
+        readme_content = self._fetch_huggingface_readme(model_id)
+        data['content'] = readme_content
+
+        # Extraire les papiers arXiv mentionnés dans les tags
+        arxiv_papers = self._extract_arxiv_from_tags_for_hugginface(model_data.get('tags', []))
+        if arxiv_papers:
+            data['arxiv_papers'] = arxiv_papers
+
+        return data
+
+    def extract_huggingface_dataset(self, dataset_id):
+        # Récupérer les métadonnées via l'API HuggingFace
+        api_url = f'https://huggingface.co/api/datasets/{dataset_id}'
+        response = requests.get(api_url)
+        if response.status_code != 200:
+            raise ValueError(f"Erreur lors de la récupération des données HuggingFace: {response.status_code}")
+        dataset_data = response.json()
+
+        data = {
+            'datasetId': dataset_data.get('datasetId'),
+            'author': dataset_data.get('author'),
+            'downloads': dataset_data.get('downloads'),
+            'tags': dataset_data.get('tags'),
+            'features': dataset_data.get('features'),
+            'likes': dataset_data.get('likes'),
+            'cardData': dataset_data.get('cardData')
+        }
+
+        # Tenter de récupérer le README via les URLs bruts
+        readme_content = self._fetch_huggingface_readme(f'datasets/{dataset_id}')
+        data['content'] = readme_content
+
+        # Extraire les papiers arXiv mentionnés dans les tags
+        arxiv_papers = self._extract_arxiv_from_tags_for_hugginface(data.get('tags', []))
+        if arxiv_papers:
+            data['arxiv_papers'] = arxiv_papers
+
+        return data
+
+    def _fetch_huggingface_readme(self, identifier):
+        """
+        Méthode interne pour récupérer le README d'un modèle ou d'un dataset HuggingFace.
+        """
         possible_readme_filenames = ['README.md', 'README.rst', 'README.txt']
         possible_branches = ['main', 'master']
         readme_content = "README non disponible."
 
         for branch in possible_branches:
             for filename in possible_readme_filenames:
-                readme_url = f'https://huggingface.co/{model_id}/raw/{branch}/{filename}'
+                readme_url = f'https://huggingface.co/{identifier}/resolve/{branch}/{filename}'
                 readme_response = requests.get(readme_url)
                 if readme_response.status_code == 200:
                     readme_content = readme_response.text
-                    break
-            if readme_content != "README non disponible.":
-                break
+                    return readme_content  # Retourner dès que le README est trouvé
 
-        data['readme'] = readme_content
+        return readme_content
 
-        return data
+    def _extract_arxiv_from_tags_for_hugginface(self, tags):
+        """
+        Méthode interne pour extraire les papiers arXiv à partir des tags.
+        Retourne une liste de dictionnaires contenant les informations des papiers arXiv.
+        """
+        arxiv_papers = []
+        arxiv_pattern = re.compile(r'arxiv:(\d{4}\.\d{5})')
+
+        for tag in tags:
+            match = arxiv_pattern.match(tag)
+            if match:
+                arxiv_id = match.group(1)
+                try:
+                    arxiv_data = self.extract_arxiv(arxiv_id)
+                    arxiv_papers.append(arxiv_data)
+                except Exception as e:
+                    arxiv_papers.append({'arxiv_id': arxiv_id, 'error': str(e)})
+
+        return arxiv_papers if arxiv_papers else None
 
     def extract_blog(self, blog_url):
         response = requests.get(blog_url)
@@ -154,14 +212,23 @@ class DataExtractor:
         return data
 
     def extract(self, url_or_id):
+        parsed_url = urlparse(url_or_id)
         if 'arxiv.org' in url_or_id:
             # Extraire l'ID arXiv
-            arxiv_id = url_or_id.split('/')[-1].replace('abs/', '').strip()
+            arxiv_id = parsed_url.path.split('/')[-1].replace('abs/', '').strip()
             return self.extract_arxiv(arxiv_id)
         elif 'github.com' in url_or_id:
             return self.extract_github(url_or_id)
         elif 'huggingface.co' in url_or_id:
-            return self.extract_huggingface(url_or_id)
+            path_parts = parsed_url.path.strip('/').split('/')
+            if len(path_parts) < 2:
+                raise ValueError("URL HuggingFace invalide. Format attendu : https://huggingface.co/owner/model ou https://huggingface.co/datasets/owner/dataset")
+            if path_parts[0].lower() == 'datasets':
+                dataset_id = '/'.join(path_parts[1:3])
+                return self.extract_huggingface_dataset(dataset_id)
+            else:
+                model_id = '/'.join(path_parts[:2])
+                return self.extract_huggingface_model(model_id)
         else:
             return self.extract_blog(url_or_id)
 
