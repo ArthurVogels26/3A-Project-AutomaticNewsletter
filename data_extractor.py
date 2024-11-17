@@ -2,7 +2,6 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-import json
 import os
 import pymupdf
 from urllib.parse import urlparse
@@ -232,11 +231,3 @@ class DataExtractor:
         else:
             return self.extract_blog(url_or_id)
 
-if __name__ == "__main__":
-    extractor = DataExtractor()
-    url_or_id = input("Veuillez entrer l'URL ou l'identifiant de la ressource : ")
-    try:
-        data = extractor.extract(url_or_id)
-        print(json.dumps(data, indent=2, ensure_ascii=False))
-    except Exception as e:
-        print(f"Une erreur s'est produite : {e}")

@@ -1,0 +1,4 @@
+pymupdf
+Streamlit
+BeautifulSoup4
+lxml
