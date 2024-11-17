@@ -14,3 +14,5 @@
 1. Clonez le dépôt :
    ```bash
    git clone https://github.com/votre-utilisateur/3A-Project-AutomaticNewsletter.git
+
+2. Installer les dépendences (voir requirement.txt)
