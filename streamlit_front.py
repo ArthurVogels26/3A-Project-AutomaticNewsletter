@@ -1,5 +1,6 @@
 import streamlit as st
 import data_extractor as d_ex
+import data_classifier as d_c
 
 # Configuration de la page
 st.set_page_config(
@@ -32,18 +33,17 @@ if st.button("Extraire les données 🚀", disabled=st.session_state.running, ke
         st.warning("Veuillez entrer un lien ou un identifiant valide.")
     else:
         extractor = d_ex.DataExtractor()
+        classifier = d_c.DataClassifier()
         try:
-            # Exécution de l'extraction
             with st.spinner("Extraction en cours..."):
-                # Appel de la fonction extract
+
+                # Appel des fonctions
                 data = extractor.extract(url_or_id)
+                category = classifier.classify(data)
+
                 # Stockage des données extraites dans la session web
                 st.session_state.extracted_data = data
-
-            st.success("Extraction réussie ! Voici les données récupérées :")
-            # Zone défilable pour afficher un JSON volumineux
-            with st.container(height=600):
-                st.json(data)  # Affichage des données formatées en JSON
+                st.session_state.extracted_category = category
 
         except Exception as e:
                 st.error(f"Une erreur s'est produite lors de l'extraction : {e}")
@@ -51,8 +51,15 @@ if st.button("Extraire les données 🚀", disabled=st.session_state.running, ke
     st.rerun()
 
 if "extracted_data" in st.session_state:
+    st.success("Extraction réussie ! Voici les données récupérées :")
     with st.container(height=600):
         st.json(st.session_state.extracted_data)
+
+    st.markdown("### Résultat de Classification :")
+    with st.container():
+        st.write(f"**Catégorie détectée :** {st.session_state.extracted_category.capitalize()}")
+        if st.session_state.extracted_category != "dataset" and st.session_state.extracted_category != "model":
+            st.warning("Type de données non reconnu. Veuillez vérifier les métadonnées.")
 
 # Footer
 st.markdown("---")
