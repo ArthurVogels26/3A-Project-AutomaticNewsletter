@@ -9,6 +9,10 @@ st.set_page_config(
     layout="centered"
 )
 
+if "running" not in st.session_state:
+    st.session_state.running = False
+
+
 # Titre principal
 st.title("Générateur de Newsletter Automatique :wave:")
 
@@ -28,7 +32,8 @@ else:
     st.session_state.running = False
 
 # Bouton pour lancer l'extraction
-if st.button("Extraire les données 🚀", disabled=st.session_state.running, key="extract_button"):
+if st.button("Extraire les données 🚀", disabled=st.session_state.running):
+    st.session_state.running = True
     if url_or_id.strip() == "":
         st.warning("Veuillez entrer un lien ou un identifiant valide.")
     else:
@@ -36,19 +41,15 @@ if st.button("Extraire les données 🚀", disabled=st.session_state.running, ke
         classifier = d_c.DataClassifier()
         try:
             with st.spinner("Extraction en cours..."):
-
-                # Appel des fonctions
-                data = extractor.extract(url_or_id)
+                data = extractor.extract(url_or_id).to_dict()
                 category = classifier.classify(data)
 
-                # Stockage des données extraites dans la session web
+                # Stockage des données dans la session
                 st.session_state.extracted_data = data
                 st.session_state.extracted_category = category
-
         except Exception as e:
-                st.error(f"Une erreur s'est produite lors de l'extraction : {e}")
-    # Rendre le bouton a nouveau cliquable
-    st.rerun()
+            st.error(f"Erreur d'extraction : {e}")
+    st.session_state.running = False
 
 if "extracted_data" in st.session_state:
     st.success("Extraction réussie ! Voici les données récupérées :")
