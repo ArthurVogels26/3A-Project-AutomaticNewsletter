@@ -1,6 +1,7 @@
 import streamlit as st
 import data_extractor as d_ex
 import data_classifier as d_c
+from new_summarize_agent import generate_summary
 
 # Configuration de la page
 st.set_page_config(
@@ -61,6 +62,19 @@ if "extracted_data" in st.session_state:
         st.write(f"**Catégorie détectée :** {st.session_state.extracted_category.capitalize()}")
         if st.session_state.extracted_category != "dataset" and st.session_state.extracted_category != "model":
             st.warning("Type de données non reconnu. Veuillez vérifier les métadonnées.")
+    
+    # Bouton de résumé
+    if st.button("Résumer les données 📝"):
+        try:
+            with st.spinner("Résumé en cours..."):
+                summary = generate_summary(st.session_state.extracted_data)
+                st.session_state.summary = summary
+        except Exception as e:
+            st.error(f"Erreur lors du résumé : {e}")
+
+if "summary" in st.session_state:
+    st.markdown("### Résumé Généré :")
+    st.write(st.session_state.summary)
 
 # Footer
 st.markdown("---")

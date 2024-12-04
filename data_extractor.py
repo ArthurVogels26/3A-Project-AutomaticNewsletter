@@ -260,7 +260,6 @@ class DataExtractor:
     
         if source_type == 'arxiv':
             result = self.extract_arxiv(identifier)
-            print("Raw extraction result (arXiv):", result)
         elif source_type == 'github':
             result = self.extract_github(identifier)
         elif source_type == 'huggingface_model':
