@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import os
 import pymupdf
 from urllib.parse import urlparse
-
+from extracted_data import ExtractedData
 
 class DataExtractor:
     def __init__(self):
@@ -210,24 +210,65 @@ class DataExtractor:
         }
         return data
 
-    def extract(self, url_or_id):
+    def get_source_type(self, url_or_id):
         parsed_url = urlparse(url_or_id)
         if 'arxiv.org' in url_or_id:
-            # Extraire l'ID arXiv
-            arxiv_id = parsed_url.path.split('/')[-1].replace('abs/', '').strip()
-            return self.extract_arxiv(arxiv_id)
+            return 'arxiv', parsed_url.path.split('/')[-1].replace('abs/', '').strip()
         elif 'github.com' in url_or_id:
-            return self.extract_github(url_or_id)
+            return 'github', url_or_id
         elif 'huggingface.co' in url_or_id:
             path_parts = parsed_url.path.strip('/').split('/')
             if len(path_parts) < 2:
                 raise ValueError("URL HuggingFace invalide. Format attendu : https://huggingface.co/owner/model ou https://huggingface.co/datasets/owner/dataset")
             if path_parts[0].lower() == 'datasets':
-                dataset_id = '/'.join(path_parts[1:3])
-                return self.extract_huggingface_dataset(dataset_id)
+                return 'huggingface_dataset', '/'.join(path_parts[1:3])
             else:
-                model_id = '/'.join(path_parts[:2])
-                return self.extract_huggingface_model(model_id)
+                return 'huggingface_model', '/'.join(path_parts[:2])
         else:
-            return self.extract_blog(url_or_id)
+            return 'blog', url_or_id
+
+
+    def convert_to_extracted_data(self, source_type, identifier, extracted_result):
+        """Convertir les résultats extraits en une instance d'ExtractedData."""
+        
+        if source_type == 'arxiv':
+            title = extracted_result.get('title', None)
+            content = extracted_result.get('content', None)
+            metadata = extracted_result.get('metadata', {})
+        elif source_type == 'github':
+            title = extracted_result.get('repo_name', None)
+            content = extracted_result.get('repo_description', None)
+            metadata = extracted_result.get('metadata', {})
+        elif source_type == 'huggingface_model':
+            title = extracted_result.get('model_name', None)
+            content = extracted_result.get('model_description', None)
+            metadata = extracted_result.get('metadata', {})
+        elif source_type == 'huggingface_dataset':
+            title = extracted_result.get('dataset_name', None)
+            content = extracted_result.get('dataset_description', None)
+            metadata = extracted_result.get('metadata', {})
+        else: 
+            title = extracted_result.get('title', None)
+            content = extracted_result.get('content', None)
+            metadata = extracted_result.get('metadata', {})
+
+        # Créer une instance d'ExtractedData
+        return ExtractedData(source_type, identifier, title, content, metadata)
+
+    def extract(self, url_or_id):
+        source_type, identifier = self.get_source_type(url_or_id)
+    
+        if source_type == 'arxiv':
+            result = self.extract_arxiv(identifier)
+        elif source_type == 'github':
+            result = self.extract_github(identifier)
+        elif source_type == 'huggingface_model':
+            result = self.extract_huggingface_model(identifier)
+        elif source_type == 'huggingface_dataset':
+            result = self.extract_huggingface_dataset(identifier)
+        elif source_type == 'blog':
+            result = self.extract_blog(identifier)
+        
+        # Convertir le résultat en un format uniforme
+        return self.convert_to_extracted_data(source_type, identifier, result)
 
