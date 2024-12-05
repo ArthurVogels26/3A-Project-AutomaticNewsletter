@@ -1,7 +1,7 @@
 import streamlit as st
 import data_extractor as d_ex
 import data_classifier as d_c
-from new_summarize_agent import generate_summary
+from summarizerAgent import generate_summary
 
 # Configuration de la page
 st.set_page_config(
