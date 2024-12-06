@@ -21,13 +21,13 @@ class DataExtractor:
         if not entry:
             raise ValueError("Aucune entrée trouvée pour l'ID arXiv fourni.")
 
-        data = {
-            'title': entry.title.text.strip(),
+        title = entry.title.text.strip()
+
+        metadata = {
             'authors': [author.find('name').text for author in entry.find_all('author')],
             'summary': entry.summary.text.strip(),
-            'published': entry.published.text,
+            'publication_date': entry.published.text,
             'categories': entry.find('arxiv:primary_category')['term'],
-            'link': entry.id.text
         }
 
         # Télécharger le PDF et extraire le texte
@@ -39,16 +39,19 @@ class DataExtractor:
 
         try:
             with pymupdf.open(pdf_path) as doc:
-                text = ""
+                content = ""
                 for page in doc:
-                    text += page.get_text()
-            data['content'] = text
+                    content += page.get_text()
         except Exception as e:
-            data['content'] = f"Erreur lors de l'extraction du texte PDF: {e}"
+            content = f"Erreur lors de l'extraction du texte PDF: {e}"
         finally:
             os.remove(pdf_path)
 
-        return data
+        return {
+            'title': title,
+            'content': content,
+            'metadata': metadata
+        }
 
     def extract_github(self, repo_url):
         # Extraire le propriétaire et le nom du dépôt à partir de l'URL
@@ -65,27 +68,26 @@ class DataExtractor:
             raise ValueError(f"Erreur lors de la récupération des données GitHub: {response.status_code}")
         repo_data = response.json()
 
-        data = {
-            'name': repo_data.get('name'),
-            'owner': repo_data.get('owner', {}).get('login'),
-            'description': repo_data.get('description'),
-            'stars': repo_data.get('stargazers_count'),
-            'forks': repo_data.get('forks_count'),
-            'language': repo_data.get('language'),
-            'created_at': repo_data.get('created_at'),
-            'updated_at': repo_data.get('updated_at'),
-            'clone_url': repo_data.get('clone_url')
-        }
+        title = repo_data.get('name', "Nom non disponible")
 
         # Récupérer le README via l'API GitHub
         readme_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/readme'
-        readme_response = requests.get(readme_url, headers={'Accept': 'application/vnd.github.v3.raw'})
-        if readme_response.status_code == 200:
-            data['content'] = readme_response.text
-        else:
-            data['content'] = "README non disponible."
+        response = requests.get(readme_url, headers={'Accept': 'application/vnd.github.v3.raw'})
+        content =  response.text if response.status_code == 200 else "README non disponible."
 
-        return data
+        metadata = {
+            'owner': repo_data.get('owner', {}).get('login'),
+            'description': repo_data.get('description'),
+            'language': repo_data.get('language'),
+            'created_at': repo_data.get('created_at'),
+            'updated_at': repo_data.get('updated_at'),
+        }
+
+        return {
+            'title': title,
+            'content': content,
+            'metadata': metadata
+        }
 
     def extract_huggingface_model(self, model_id):
         # Récupérer les métadonnées via l'API HuggingFace
@@ -95,26 +97,26 @@ class DataExtractor:
             raise ValueError(f"Erreur lors de la récupération des données HuggingFace: {response.status_code}")
         model_data = response.json()
 
-        data = {
-            'modelId': model_data.get('modelId'),
+        title = model_data.get('modelId', "Modèle non disponible")
+        content = self._fetch_huggingface_readme(model_id)
+
+        metadata = {
             'author': model_data.get('author'),
-            'downloads': model_data.get('downloads'),
             'tags': model_data.get('tags'),
             'pipeline_tag': model_data.get('pipeline_tag'),
-            'likes': model_data.get('likes'),
             'cardData': model_data.get('cardData')
         }
-
-        # Tenter de récupérer le README via les URLs bruts
-        readme_content = self._fetch_huggingface_readme(model_id)
-        data['content'] = readme_content
 
         # Extraire les papiers arXiv mentionnés dans les tags
         arxiv_papers = self._extract_arxiv_from_tags_for_hugginface(model_data.get('tags', []))
         if arxiv_papers:
-            data['arxiv_papers'] = arxiv_papers
+            metadata['arxiv_papers'] = arxiv_papers
 
-        return data
+        return {
+            'title': title,
+            'content': content,
+            'metadata': metadata
+        }
 
     def extract_huggingface_dataset(self, dataset_id):
         # Récupérer les métadonnées via l'API HuggingFace
@@ -124,26 +126,26 @@ class DataExtractor:
             raise ValueError(f"Erreur lors de la récupération des données HuggingFace: {response.status_code}")
         dataset_data = response.json()
 
-        data = {
-            'datasetId': dataset_data.get('datasetId'),
+        title = dataset_data.get('datasetId', "Dataset non disponible")
+        content = self._fetch_huggingface_readme(f'datasets/{dataset_id}')
+
+        metadata = {
             'author': dataset_data.get('author'),
-            'downloads': dataset_data.get('downloads'),
             'tags': dataset_data.get('tags'),
             'features': dataset_data.get('features'),
-            'likes': dataset_data.get('likes'),
             'cardData': dataset_data.get('cardData')
         }
 
-        # Tenter de récupérer le README via les URLs bruts
-        readme_content = self._fetch_huggingface_readme(f'datasets/{dataset_id}')
-        data['content'] = readme_content
-
         # Extraire les papiers arXiv mentionnés dans les tags
-        arxiv_papers = self._extract_arxiv_from_tags_for_hugginface(data.get('tags', []))
+        arxiv_papers = self._extract_arxiv_from_tags_for_hugginface(dataset_data.get('tags', []))
         if arxiv_papers:
-            data['arxiv_papers'] = arxiv_papers
+            metadata['arxiv_papers'] = arxiv_papers
 
-        return data
+        return {
+            'title': title,
+            'content': content,
+            'metadata': metadata
+        }
 
     def _fetch_huggingface_readme(self, identifier):
         """
@@ -165,7 +167,7 @@ class DataExtractor:
 
     def _extract_arxiv_from_tags_for_hugginface(self, tags):
         """
-        Méthode interne pour extraire les papiers arXiv à partir des tags.
+        Méthode interne pour extraire les papiers arXiv à partir des tags présent sur une page huggingface.
         Retourne une liste de dictionnaires contenant les informations des papiers arXiv.
         """
         arxiv_papers = []
@@ -189,26 +191,23 @@ class DataExtractor:
             raise ValueError(f"Erreur lors de la récupération de l'article de blog: {response.status_code}")
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Extraction du titre
         title_tag = soup.find('title')
         title = title_tag.text.strip() if title_tag else "Titre non disponible"
 
         # Extraction du contenu principal
         # Partie à ajuster
-        article = soup.find('article')
-        if article:
-            paragraphs = article.find_all(['p', 'h1', 'h2', 'h3', 'li'])
-        else:
-            paragraphs = soup.find_all('p')
-
+        paragraphs = soup.find_all(['p', 'h1', 'h2', 'h3', 'li'])
         content = '\n'.join([para.get_text().strip() for para in paragraphs])
 
-        data = {
-            'title': title,
-            'content': content,
+        metadata = {
             'url': blog_url
         }
-        return data
+
+        return {
+            'title': title,
+            'content': content,
+            'metadata': metadata
+        }
 
     def get_source_type(self, url_or_id):
         parsed_url = urlparse(url_or_id)
@@ -236,16 +235,16 @@ class DataExtractor:
             content = extracted_result.get('content', None)
             metadata = extracted_result.get('metadata', {})
         elif source_type == 'github':
-            title = extracted_result.get('repo_name', None)
-            content = extracted_result.get('repo_description', None)
+            title = extracted_result.get('title', None)
+            content = extracted_result.get('content', None)
             metadata = extracted_result.get('metadata', {})
         elif source_type == 'huggingface_model':
-            title = extracted_result.get('model_name', None)
-            content = extracted_result.get('model_description', None)
+            title = extracted_result.get('title', None)
+            content = extracted_result.get('content', None)
             metadata = extracted_result.get('metadata', {})
         elif source_type == 'huggingface_dataset':
-            title = extracted_result.get('dataset_name', None)
-            content = extracted_result.get('dataset_description', None)
+            title = extracted_result.get('title', None)
+            content = extracted_result.get('content', None)
             metadata = extracted_result.get('metadata', {})
         else: 
             title = extracted_result.get('title', None)

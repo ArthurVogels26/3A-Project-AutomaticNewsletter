@@ -10,10 +10,6 @@ st.set_page_config(
     layout="centered"
 )
 
-if "running" not in st.session_state:
-    st.session_state.running = False
-
-
 # Titre principal
 st.title("Générateur de Newsletter Automatique :wave:")
 
@@ -33,8 +29,7 @@ else:
     st.session_state.running = False
 
 # Bouton pour lancer l'extraction
-if st.button("Extraire les données 🚀", disabled=st.session_state.running):
-    st.session_state.running = True
+if st.button("Extraire les données 🚀", disabled=st.session_state.running, key='extract_button'):
     if url_or_id.strip() == "":
         st.warning("Veuillez entrer un lien ou un identifiant valide.")
     else:
@@ -50,7 +45,8 @@ if st.button("Extraire les données 🚀", disabled=st.session_state.running):
                 st.session_state.extracted_category = category
         except Exception as e:
             st.error(f"Erreur d'extraction : {e}")
-    st.session_state.running = False
+
+    st.rerun()
 
 if "extracted_data" in st.session_state:
     st.success("Extraction réussie ! Voici les données récupérées :")

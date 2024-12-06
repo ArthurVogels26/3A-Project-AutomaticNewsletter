@@ -9,9 +9,6 @@ class DataClassifier:
     def classify_huggingface_data(data):
         """
         Classifie les données Hugging Face comme étant un modèle ou un dataset.
-
-        :param data: Dictionnaire contenant les métadonnées extraites de Hugging Face
-        :return: Chaîne indiquant "dataset", "model" ou "unknown"
         """
         if 'datasetId' in data:
             return "dataset"
@@ -25,28 +22,29 @@ class DataClassifier:
         """
         Vérifie si les données correspondent à un dataset.
 
-        :param data: Dictionnaire des métadonnées
-        :return: Booléen indiquant si les données sont un dataset
         """
-        return 'datasetId' in data
+        if data.get('source_type') == "huggingface_dataset" :
+            return True
+        else:
+            # METTRE METHODE DE CLASSIFICATION
+            return False
 
     @staticmethod
     def is_model(data):
         """
         Vérifie si les données correspondent à un modèle.
 
-        :param data: Dictionnaire des métadonnées
-        :return: Booléen indiquant si les données sont un modèle
         """
-        return 'modelId' in data
+        if data.get('source_type') == "huggingface_model" :
+            return True
+        else:
+            # METTRE METHODE DE CLASSIFICATION
+            return False
 
     @staticmethod
     def classify(data):
         """
         Classifie génériquement les données extraites.
-
-        :param data: Dictionnaire contenant les métadonnées extraites
-        :return: Chaîne indiquant le type de données ("dataset", "model", "unknown")
         """
         if DataClassifier.is_dataset(data):
             return "dataset"
