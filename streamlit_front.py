@@ -1,7 +1,7 @@
 import streamlit as st
 import data_extractor as d_ex
 import data_classifier as d_c
-from summarizerAgent import generate_summary
+from summarizerAgent import generate_summary, criticize_summary
 
 # Configuration de la page
 st.set_page_config(
@@ -71,6 +71,18 @@ if "extracted_data" in st.session_state:
 if "summary" in st.session_state:
     st.markdown("### Résumé Généré :")
     st.write(st.session_state.summary)
+
+    if st.button("Critiquer le résumé 💯"):
+        try:
+            with st.spinner("Critique en cours"):
+                review = criticize_summary(st.session_state.extracted_data,st.session_state.summary)
+                st.session_state.review = review
+        except Exception as e:
+            st.error(f"Erreur lors de la critique: {e}")
+        
+        if "review" in st.session_state:
+            st.markdown("### Critique du résumé :")
+            st.write(st.session_state.review)
 
 # Footer
 st.markdown("---")

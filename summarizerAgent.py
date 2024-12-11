@@ -4,7 +4,7 @@ from langchain.schema import Document
 import data_extractor as d_ex
 
 
-def generate_summary(data) -> str:
+def generate_summary(data: str) -> str:
 
     model = OllamaLLM(model="llama3.2")
 
@@ -23,6 +23,31 @@ def generate_summary(data) -> str:
         summary += token
 
     return summary
+
+def criticize_summary(data,summary: str) -> str:
+    
+    model = OllamaLLM(model="llama3.2")
+    template = """
+    You are an agent trained to criticize an AI generated summary of a text.
+    The original text is here: {text}
+    And the summary is here: {summary}
+    Your review should be based on the following axes:
+    - Conciseness: A summary is concise if the information is delivered efficiently, in a limited number of words.
+    - Level of Detail: A summary has a high level of detail if it is able to explain in depth the most important aspects of the text.
+    - Correctness: A summary is correct if all the information in the summary appears in the same way or in a reformulated way in the original text. It is
+    incorrect if some information in the summary contradicts the original text.
+
+    For each axis, give a grade from 1 to 10, explaining possible improvement. For the correctness. Flag every piece of info that either doesn't appear or contradicts the original text.
+    At the end, give a general grade, from 1 to 10 to the summary.
+    """
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = prompt | model
+
+    review = ""
+    for token in chain.stream({"text": data["content"], "summary": summary}):
+        review += token
+
+    return review
 
 
 if __name__ == "__main__":
