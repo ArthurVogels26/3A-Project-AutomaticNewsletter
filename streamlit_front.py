@@ -2,6 +2,7 @@ import streamlit as st
 import data_extractor as d_ex
 import data_classifier as d_c
 from summarizerAgent import generate_summary, criticize_summary
+from evaluate_rouge import evaluate_summary_with_original
 
 # Configuration de la page
 st.set_page_config(
@@ -83,6 +84,21 @@ if "summary" in st.session_state:
         if "review" in st.session_state:
             st.markdown("### Critique du résumé :")
             st.write(st.session_state.review)
+    
+    if st.button("Évaluer le Résumé avec Rouge 🧮"):
+        try:
+            with st.spinner("Calcul des métriques Rouge..."):
+                original_content = st.session_state.extracted_data.get("content", "")
+                rouge_scores = evaluate_summary_with_original(st.session_state.summary, original_content)
+                st.session_state.rouge_scores = rouge_scores
+        except Exception as e:
+            st.error(f"Erreur lors de l'évaluation Rouge : {e}")
+    if "rouge_scores" in st.session_state:
+        st.markdown("### Scores Rouge :")
+        st.write("**Rouge-1 Précision :** {:.2f}".format(st.session_state.rouge_scores["rouge1_precision"]))
+        st.write("**Rouge-2 Précision :** {:.2f}".format(st.session_state.rouge_scores["rouge2_precision"]))
+        st.write("**Rouge-L Précision :** {:.2f}".format(st.session_state.rouge_scores["rougeL_precision"]))
+    
 
 # Footer
 st.markdown("---")
