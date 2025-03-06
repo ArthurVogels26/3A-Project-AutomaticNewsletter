@@ -1,7 +1,7 @@
 import streamlit as st
 import data_extractor as d_ex
 import data_classifier as d_c
-from summarizerAgent import generate_summary, criticize_summary
+from summarizerAgent import generate_summary, criticize_summary, classify_document
 from evaluate_rouge import evaluate_summary_with_original
 
 # Configuration de la page
@@ -39,7 +39,7 @@ if st.button("Extraire les données 🚀", disabled=st.session_state.running, ke
         try:
             with st.spinner("Extraction en cours..."):
                 data = extractor.extract(url_or_id).to_dict()
-                category = classifier.classify(data)
+                category, (input_tok,output_tok) = classify_document(data)
 
                 # Stockage des données dans la session
                 st.session_state.extracted_data = data
@@ -64,14 +64,16 @@ if "extracted_data" in st.session_state:
     if st.button("Résumer les données 📝"):
         try:
             with st.spinner("Résumé en cours..."):
-                summary = generate_summary(st.session_state.extracted_data)
+                summary, (input_tok, output_tok) = generate_summary(st.session_state.extracted_data)
                 st.session_state.summary = summary
+                st.session_state.summary_price = float(input_tok)*0.150/1e6 + float(output_tok)*0.6/1e6
         except Exception as e:
             st.error(f"Erreur lors du résumé : {e}")
 
 if "summary" in st.session_state:
     st.markdown("### Résumé Généré :")
     st.write(st.session_state.summary)
+    st.write(f"Prix du résumé 💸: {st.session_state.summary_price}$")
 
     if st.button("Critiquer le résumé 💯"):
         try:
