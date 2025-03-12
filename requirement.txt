@@ -2,3 +2,7 @@ pymupdf
 Streamlit
 BeautifulSoup4
 lxml
+dotenv
+langchain
+langchain_ollama
+langchain_openai

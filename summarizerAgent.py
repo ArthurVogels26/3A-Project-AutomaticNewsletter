@@ -1,19 +1,16 @@
 from langchain_ollama import OllamaLLM
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.schema import Document
 import data_extractor as d_ex
 import openai
 import os
+from dotenv import load_dotenv
 
-#Safely getting the OPENAI_API_KEY
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-API_FILE = os.path.join(parent_dir,"APIKEY")
-with open(API_FILE, 'r') as file:
-    API_KEY = file.read()
+load_dotenv(dotenv_path=".env.local")
+API_KEY = os.getenv("OPENAI_API_KEY")
 
-def classify_document(data, gpt = True) -> str:
+
+def classify_document(data, gpt = False) -> str:
 
     if gpt:
         model = ChatOpenAI(
@@ -55,7 +52,7 @@ def classify_document(data, gpt = True) -> str:
     return summary, (0,0)
 
 
-def generate_summary(data: str, gpt = True) -> str:
+def generate_summary(data: str, gpt = False) -> str:
 
     if gpt:
         model = ChatOpenAI(
@@ -83,7 +80,7 @@ def generate_summary(data: str, gpt = True) -> str:
     
     return summary, (0,0)
 
-def criticize_summary(data,summary: str, gpt=True) -> str:
+def criticize_summary(data,summary: str, gpt=False) -> str:
     
     if gpt:
         model = ChatOpenAI(
@@ -116,34 +113,3 @@ def criticize_summary(data,summary: str, gpt=True) -> str:
         return review.content
     
     return review
-
-
-if __name__ == "__main__":
-
-    url_or_id = "https://arxiv.org/pdf/1611.07004"
-    model = OllamaLLM(model="llama3.2")
-    
-    print("Collecting document...\n")
-    extractor= d_ex.DataExtractor()
-    extracted_data = extractor.extract(url_or_id)
-    document = extracted_data.to_langchain_document()
-
-    template = """
-    Summarize the following text : {text}
-
-    Your summary should follow this structure: At first, explain the context of the paper, what is it about.
-    Then, make bullet points summarizing at least the different subjects: model, method, results.
-    The summary should be very concise: maximum 150 words
-    """
-
-    prompt = ChatPromptTemplate.from_template(template)
-    chain = prompt | model
-
-    """
-    for token in chain.stream({"text": document.page_content}):
-        print(token, end='', flush=True)
-    """
-
-    response = chain.invoke({"text": document.page_content})
-
-    
