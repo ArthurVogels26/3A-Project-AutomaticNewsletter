@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=".env.local")
 API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-def classify_document(data, gpt = False) -> str:
+def classify_document(data, gpt = True) -> str:
 
     if gpt:
         model = ChatOpenAI(
@@ -52,7 +52,7 @@ def classify_document(data, gpt = False) -> str:
     return summary, (0,0)
 
 
-def generate_summary(data: str, gpt = False) -> str:
+def generate_summary(data: str, gpt = True) -> str:
 
     if gpt:
         model = ChatOpenAI(
@@ -80,7 +80,7 @@ def generate_summary(data: str, gpt = False) -> str:
     
     return summary, (0,0)
 
-def criticize_summary(data,summary: str, gpt=False) -> str:
+def criticize_summary(data,summary: str, gpt=True) -> str:
     
     if gpt:
         model = ChatOpenAI(
