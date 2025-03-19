@@ -76,11 +76,6 @@ def scrape_subreddit(sub_name, sort='top', limit = None, filter_flairs=["Researc
             topic['title'] = title
             topic['text'] = text
             topic['links'] = links
-
-            print("===========================")
-            print(topic['links'])
-            print("===========================")
-
             topics.append(topic)
 
 scrape_subreddit('MachineLearning',limit=5)
