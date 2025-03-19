@@ -212,7 +212,7 @@ class DataExtractor:
     def get_source_type(self, url_or_id):
         parsed_url = urlparse(url_or_id)
         if 'arxiv.org' in url_or_id:
-            return 'arxiv', parsed_url.path.split('/')[-1].replace('abs/', '').strip()
+            return 'arxiv', parsed_url.path.split('/')[-1].replace('abs/', '').replace('pdf/', '').replace('.pdf', '').strip()
         elif 'github.com' in url_or_id:
             return 'github', url_or_id
         elif 'huggingface.co' in url_or_id:
