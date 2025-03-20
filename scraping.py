@@ -2,6 +2,9 @@ from praw import Reddit
 import json
 import string
 import re
+import pandas as pd
+from datetime import datetime
+import csv
 
 def initialize():
     # Initialize reddit session
@@ -33,7 +36,24 @@ def get_flair(topic):
 def extract_urls(text):
     # Regex pattern to find URLs inside parentheses
     pattern = r'\((https?://[^\s)]+)\)'
-    return re.findall(pattern, text)
+    url_list = re.findall(pattern, text)
+    
+    if len(url_list) == 0:
+        return None
+    
+    for url in url_list:
+        if "arxiv.org" in url:
+            return [url]
+        
+    for url in url_list:
+        if "github" in url:
+            return [url]
+    
+    for url in url_list:
+        if "hugging" in url:
+            return [url]
+        
+    return [url_list[0]]
 
 def extract_topic(topic):
     """
@@ -83,7 +103,8 @@ def scrape_subreddit(reddit, sub_name, sort='hot', limit = None, filter_flairs=[
             topic['title'] = title
             topic['text'] = text
             topic['links'] = links
-            topics.append(topic)
+            if topic['links']:
+                topics.append(topic)
     
     return topics
 
@@ -101,3 +122,22 @@ def get_entries_from_reddit():
         topics.extend(scrape_subreddit(reddit,subreddit,limit=50))
 
     return topics
+
+def update_csv_from_reddit(csv_file):
+    topics = get_entries_from_reddit()
+    today = datetime.today().strftime("%d/%m/%Y")
+
+    # Lecture des colonnes du csv
+    with open(csv_file, mode='r', newline='') as file:
+        reader = csv.reader(file)
+        headers = next(reader)
+
+    blank_columns = [''] * (len(headers) - 2)
+
+    with open('reddit.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+        for topic in topics:
+            writer.writerow([today,topic['links'][0]] + blank_columns)
+
+update_csv_from_reddit('AI takeaways benchmark.csv')
