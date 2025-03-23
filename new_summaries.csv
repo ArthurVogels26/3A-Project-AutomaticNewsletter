@@ -1,0 +1,149 @@
+Reception date,Link,Review priority,Category (Illuin),Category AI,Status,Reviewed,Topic / Keywords (Illuin),Topic / Keywords AI,Take-away (Illuin),Take-away AI,rouge1 precision,rouge2 precision,rougeL precision
+23/03/2025,https://arxiv.org/abs/2503.11647,,,Model,Processed,,,,,"The document presents ReCamMaster, a framework for camera-controlled generative video rendering that allows the alteration of camera trajectories in existing videos. It leverages pre-trained text-to-video models and introduces a novel video conditioning mechanism to enhance video generation quality.
+
+- **Model**: Utilizes a latent video diffusion model with 3D attention for spatiotemporal processing.
+- **Method**: Constructs a large-scale, multi-camera synchronized video dataset using Unreal Engine 5 to train the model effectively.
+- **Results**: ReCamMaster significantly outperforms existing methods in visual quality, camera accuracy, and synchronization.
+- **Applications**: Demonstrates potential in video stabilization, super-resolution, and outpainting.
+- **Innovations**: Introduces frame-dimension conditioning for improved token interaction and generalization capabilities across various video generation tasks.",,,
+23/03/2025,https://arxiv.org/abs/2503.06053,,,Dataset,Processed,,,,,"The document presents the DropletVideo project, which focuses on integral spatio-temporal consistency in video generation. It introduces a new dataset, DropletVideo-10M, and a model, DropletVideo, aimed at enhancing the coherence of generated videos through improved handling of camera movements and plot progression.
+
+- **Dataset**: DropletVideo-10M consists of 10 million videos with dynamic camera motions and detailed captions (average 206 words).
+- **Model**: DropletVideo utilizes a diffusion model architecture to ensure spatio-temporal consistency while generating videos.
+- **Methodology**: The model incorporates a motion adaptive generation strategy to control video speed and camera dynamics.
+- **Results**: DropletVideo outperforms existing models in maintaining spatio-temporal consistency, achieving competitive results against closed-source models.
+- **Open-source**: The dataset and model are open-sourced to foster innovation in video generation research.",,,
+23/03/2025,https://arxiv.org/abs/2503.16416,,,Pedagogy,Processed,,,,,"The document is a comprehensive survey on the evaluation methodologies for Large Language Model (LLM)-based agents, highlighting their capabilities in planning, reasoning, tool usage, and memory management within dynamic environments. It identifies key trends, gaps, and future research directions in agent evaluation.
+
+- **Evaluation Frameworks**: Analyzes benchmarks across four dimensions: fundamental capabilities, application-specific benchmarks, generalist agent benchmarks, and evaluation frameworks.
+- **Emerging Trends**: Shift towards realistic, challenging evaluations with continuously updated benchmarks.
+- **Critical Gaps**: Need for assessing cost-efficiency, safety, robustness, and developing scalable evaluation methods.
+- **Applications**: Discusses specific benchmarks for web, software engineering, scientific, and conversational agents.
+- **Future Directions**: Emphasizes the importance of granular evaluation, cost metrics, automation, and safety compliance in agent assessments.",,,
+23/03/2025,https://arxiv.org/abs/2503.13358,,,Method,Processed,,,,,"The document presents a novel approach called Residual Shifting Distillation (RSD) for image super-resolution (SR) using diffusion models. It addresses the computational inefficiencies of existing methods while improving perceptual quality.
+
+- RSD distills the ResShift model to enhance image restoration efficiency in a single inference step.
+- The method trains a student network to generate images that align with a teacher model, improving fidelity and perceptual quality.
+- RSD outperforms existing distillation methods like SinSR and OSEDiff in various metrics, including PSNR and SSIM.
+- It maintains competitive performance against state-of-the-art text-to-image models while requiring fewer parameters and less GPU memory.
+- Experimental results demonstrate RSD's effectiveness across multiple datasets, showcasing its potential for real-world applications in image super-resolution.",,,
+23/03/2025,https://arxiv.org/abs/2503.11576,,,Model,Processed,,,,,"The document introduces SmolDocling, an ultra-compact vision-language model designed for end-to-end multi-modal document conversion, focusing on accurately capturing the content, structure, and spatial location of document elements.
+
+- SmolDocling utilizes a new markup format called DocTags to represent document elements.
+- It is significantly smaller (256M parameters) than existing models, yet competes with larger models in performance.
+- The model effectively handles diverse document types, including business documents, academic papers, and technical reports.
+- New publicly sourced datasets for charts, tables, equations, and code recognition are introduced.
+- SmolDocling's architecture allows for efficient processing, reducing computational requirements while maintaining high accuracy in tasks like text recognition and layout analysis.
+- Experimental results show superior performance compared to larger models across various document understanding tasks.",,,
+23/03/2025,https://arxiv.org/abs/2503.14456,,,Model,Processed,,,,,"The document presents RWKV-7 ""Goose,"" a novel sequence modeling architecture that achieves state-of-the-art performance in multilingual tasks at the 3 billion parameter scale, while requiring constant memory usage and inference time per token. It introduces significant advancements over previous models by employing a generalized delta rule with vector-valued gating and in-context learning rates.
+
+- RWKV-7 models outperform existing models in multilingual tasks despite training on fewer tokens.
+- The architecture allows for state tracking and recognition of all regular languages.
+- An extended 3.1 trillion token multilingual dataset is introduced.
+- Four pre-trained models are released under the Apache 2.0 License.
+- The model demonstrates improved efficiency and performance compared to earlier RWKV versions and competitive results against Transformers.
+- Insights into architectural design choices, training methods, and evaluation results are provided, highlighting RWKV-7's capabilities.",,,
+23/03/2025,https://arxiv.org/abs/2503.07677,,,Method,Processed,,,,,"The document presents PLADIS, a novel method for enhancing diffusion models at inference time by leveraging sparse attention mechanisms. It aims to improve text-to-image generation without requiring additional training or neural function evaluations, making it compatible with various guidance techniques.
+
+- **PLADIS Overview**: Enhances pre-trained diffusion models using sparse attention, improving text alignment and image quality.
+- **Methodology**: Utilizes a combination of dense and sparse attention mechanisms, specifically α-Entmax, during inference.
+- **Compatibility**: Integrates seamlessly with existing guidance techniques (e.g., CFG, PAG, SEG) and guidance-distilled models.
+- **Results**: Demonstrates significant improvements in generation quality, text alignment, and user preference across multiple datasets and models.
+- **Efficiency**: Offers a cost-effective solution without increasing inference time, showcasing robustness across different model architectures.",,,
+23/03/2025,https://arxiv.org/abs/2503.16419,,,Pedagogy,Processed,,,,,"The document is a comprehensive survey on ""Efficient Reasoning for Large Language Models"" (LLMs), focusing on the challenges and advancements in optimizing reasoning processes while reducing computational overhead. It addresses the ""overthinking phenomenon,"" where LLMs generate excessively verbose outputs, and emphasizes the importance of efficient reasoning for practical applications.
+
+- **Efficient Reasoning**: Aims to shorten reasoning lengths while maintaining accuracy.
+- **Categories of Approaches**: 
+  - Model-based (optimizing reasoning models)
+  - Output-based (reducing output verbosity)
+  - Input prompts-based (guiding reasoning through prompt design)
+- **Techniques**: 
+  - Reinforcement Learning (RL) with length rewards
+  - Supervised Fine-Tuning (SFT) with variable-length data
+  - Dynamic reasoning paradigms during inference
+- **Applications**: Enhancements in autonomous driving, embodied AI, and healthcare.
+- **Future Directions**: Continuous updates on research and evaluation methods for effective reasoning in LLMs.",,,
+23/03/2025,https://arxiv.org/abs/2503.14476,,,Method,Processed,,,,,"The document presents DAPO, an open-source large-scale reinforcement learning (RL) system designed to enhance reasoning capabilities in large language models (LLMs). It introduces the Decoupled Clip and Dynamic sAmpling Policy Optimization algorithm, which aims to improve reproducibility and efficiency in RL training.
+
+- **Model**: Utilizes the Qwen2.5-32B base model.
+- **Method**: Introduces four key techniques: Clip-Higher, Dynamic Sampling, Token-Level Policy Gradient Loss, and Overlong Reward Shaping.
+- **Results**: Achieved 50 points on AIME 2024, outperforming previous state-of-the-art results with only 50% of the training steps.
+- **Open-source**: Provides training code and a curated dataset to facilitate further research and reproducibility in large-scale LLM RL. 
+
+The work aims to democratize access to advanced RL techniques and foster community engagement in this area.",,,
+23/03/2025,https://arxiv.org/abs/2503.12533,,,Model,Processed,,,,,"The document presents ""Being-0,"" a humanoid robotic agent framework that integrates vision-language models (VLMs) and modular skills to perform complex tasks in real-world environments. It aims to enhance the capabilities of humanoid robots by bridging high-level cognitive functions with low-level skill execution.
+
+- **Framework Components**: Includes a Foundation Model for task planning, a VLM Connector for skill translation, and a Modular Skill Library for locomotion and manipulation.
+- **Challenges Addressed**: Combines high-level reasoning with robust execution, improving efficiency and reducing errors in long-horizon tasks.
+- **Experimental Results**: Demonstrated an average task completion rate of 84.4% in complex environments, outperforming systems without the Connector.
+- **Real-World Applications**: Capable of tasks like navigation, manipulation, and real-time decision-making using active vision and dexterous hands. 
+
+Overall, Being-0 enhances humanoid robots' functionality in dynamic settings.",,,
+23/03/2025,https://arxiv.org/abs/2503.12885,,,Method,Processed,,,,,"The document presents ""DreamRenderer,"" a novel approach for enhancing multi-instance control in large-scale text-to-image models, specifically addressing the limitations of existing methods like FLUX and 3DIS. DreamRenderer allows users to fine-tune the content of individual instances in generated images without requiring additional training.
+
+- **Key Innovations**: Introduces Hard Text Attribute Binding using Bridge Image Tokens to maintain visual coherence while ensuring accurate attribute assignment.
+- **Layer Analysis**: Applies Hard Image Attribute Binding selectively in critical middle layers of the FLUX model to balance instance fidelity and overall image quality.
+- **Performance Improvement**: Achieves a 17.7% increase in Image Success Ratio over FLUX and up to 26.8% improvement for other layout-to-image models.
+- **Evaluation**: Demonstrates effectiveness on COCO-POS and COCO-MIG benchmarks, showcasing superior instance control and image quality.",,,
+23/03/2025,https://arxiv.org/abs/2503.15265,,,Model,Processed,,,,,"The document presents ""DeepMesh,"" a framework for generating high-quality, artist-like 3D meshes from point clouds using an auto-regressive model enhanced by reinforcement learning. It addresses challenges in existing mesh generation methods, such as limited face counts and mesh incompleteness.
+
+- **Innovative Tokenization**: Introduces an efficient tokenization algorithm that reduces sequence length by 72% without losing geometry details.
+- **Reinforcement Learning Integration**: Utilizes Direct Preference Optimization (DPO) to align generated meshes with human aesthetic preferences.
+- **Data Curation Strategy**: Implements a filtering process to improve training data quality, enhancing model performance.
+- **Model Architecture**: Employs a transformer-based architecture with cross-attention and self-attention layers for effective mesh generation.
+- **Performance**: DeepMesh outperforms state-of-the-art methods in both geometric accuracy and visual appeal, generating meshes with intricate details and precise topology.",,,
+23/03/2025,https://arxiv.org/abs/2503.16302,,,Model,Processed,,,,,"The document presents the Flash Vecset Diffusion Model (FlashVDM), a framework designed to accelerate the generation of high-resolution 3D shapes using the Vecset Diffusion Model (VDM). The focus is on improving speed without compromising quality, addressing challenges in diffusion sampling and Variational Autoencoder (VAE) decoding.
+
+- **FlashVDM Framework**: Enhances VDM for faster shape generation.
+- **Key Innovations**:
+  - **Progressive Flow Distillation**: Reduces diffusion sampling steps while maintaining output quality.
+  - **Lightning Vecset Decoder**: Implements Adaptive KV Selection and Hierarchical Volume Decoding to lower computational costs.
+- **Performance Gains**: Achieves over 45× speedup in VAE decoding and 32× overall reduction in inference time.
+- **Application**: Successfully applied to Hunyuan3D-2, resulting in Hunyuan3D-2 Turbo, capable of generating shapes in under 1 second.",,,
+23/03/2025,https://arxiv.org/abs/2503.12349,,,Method,Processed,,,,,"The document presents SPIN-Bench, a benchmark designed to evaluate Large Language Models (LLMs) on their abilities in strategic planning and social reasoning across various multi-agent scenarios. 
+
+- **Framework**: SPIN-Bench integrates classical planning tasks, competitive board games, cooperative card games, and negotiation scenarios to assess LLM performance.
+- **Evaluation**: It systematically varies action spaces, state complexity, and agent interactions to highlight LLM limitations in complex reasoning and social dynamics.
+- **Findings**: Contemporary LLMs perform well in basic tasks but struggle with multi-hop reasoning and social intelligence, particularly in negotiation and cooperation.
+- **Contributions**: SPIN-Bench serves as a comprehensive tool for future research in AI planning, social reasoning, and human-AI collaboration, aiming to bridge gaps toward artificial general intelligence (AGI).",,,
+23/03/2025,https://arxiv.org/abs/2503.15485,,,Model,Processed,,,,,"The document introduces TULIP (Towards Unified Language-Image Pretraining), a new open-source model designed to enhance the performance of vision-language tasks by improving fine-grained visual understanding while maintaining semantic alignment. TULIP addresses limitations of existing contrastive image-text models, such as CLIP and SigLIP, which prioritize high-level semantics over detailed visual features.
+
+- TULIP employs generative data augmentation, enhanced contrastive learning, and reconstruction regularization.
+- It scales to over 1 billion parameters and achieves state-of-the-art performance on benchmarks like ImageNet-1K and MMVP.
+- The model excels in zero-shot classification, fine-grained recognition, and vision-language tasks, outperforming existing models.
+- TULIP integrates image-image and text-text contrastive learning to improve spatial awareness and local visual details.
+- The method demonstrates significant improvements in reasoning and perceptual skills across various datasets.",,,
+23/03/2025,https://arxiv.org/abs/2503.14378,,,Dataset,Processed,,,,,"The document presents research on ""impossible videos,"" which defy physical, biological, geographical, or social laws. It introduces IPV-BENCH, a benchmark designed to evaluate video generation and understanding models on their ability to create and comprehend such videos.
+
+- **Objective**: To explore the capabilities of video generation and understanding models in handling impossible scenarios.
+- **Taxonomy**: Categorizes impossible videos into four domains: Physical, Biological, Geographical, and Social.
+- **Benchmark Components**: Includes a prompt suite (IPV-TXT) with 260 text prompts and a video dataset (IPV-VID) featuring 902 videos.
+- **Evaluation**: Reveals that current models struggle with impossible videos, highlighting gaps in reasoning and generation capabilities.
+- **Future Directions**: Identifies the need for advancements in model reasoning, particularly regarding temporal dynamics and world knowledge.",,,
+23/03/2025,https://arxiv.org/abs/2503.14478,,,Dataset,Processed,,,,,"The document presents ""Creation-MMBench,"" a benchmark designed to evaluate the creative capabilities of Multimodal Large Language Models (MLLMs) in real-world scenarios involving visual inputs. It addresses the gap in assessing MLLMs' creative intelligence compared to existing benchmarks.
+
+- **Purpose**: Creation-MMBench assesses MLLMs' creativity through 765 test cases across 51 tasks.
+- **Categories**: Tasks are divided into Literary Writing, Common Functional Writing, Professional Functional Writing, and Creative Multimodal Understanding.
+- **Evaluation Method**: Instance-specific criteria are used for assessing response quality and visual factuality.
+- **Results**: Current open-source MLLMs underperform compared to proprietary models in creative tasks, and visual fine-tuning can negatively impact creativity.
+- **Contribution**: Establishes a comprehensive framework for evaluating MLLM creativity, offering insights for future research and development.",,,
+23/03/2025,https://arxiv.org/abs/2503.11646,,,Method,Processed,,,,,"The document presents a novel approach to robotic imitation learning called Adversarial Data Collection (ADC), which emphasizes data efficiency by enhancing the quality of demonstrations through real-time human collaboration and perturbations. This method aims to reduce reliance on large datasets while improving task performance.
+
+- **ADC Framework**: Integrates a tele-operator and an adversarial operator to introduce dynamic visual and linguistic perturbations during data collection.
+- **Efficiency**: Models trained with only 20% of ADC data outperform those trained with full traditional datasets.
+- **Robustness**: ADC-trained models exhibit superior generalization to unseen tasks and robustness to environmental changes and linguistic variations.
+- **Dataset**: A large-scale ADC-Robotics dataset is being curated to support advancements in robotic learning.
+- **Results**: ADC enhances failure recovery capabilities and overall task success rates, demonstrating the importance of strategic data acquisition in robotics.",,,
+23/03/2025,https://arxiv.org/abs/2503.13288,,,Method,Processed,,,,,"The document presents ""ϕ-Decoding,"" a novel adaptive inference-time optimization strategy for large language models (LLMs) aimed at enhancing performance and efficiency in reasoning tasks. It addresses the limitations of traditional auto-regressive generation and search-based methods by employing foresight sampling to balance exploration and exploitation during inference.
+
+- **Model**: ϕ-Decoding leverages simulated future steps for optimal step estimation.
+- **Method**: It combines foresight and clustering to estimate step values and employs in-width and in-depth pruning strategies for efficient computation.
+- **Results**: Extensive experiments show a performance improvement of over 14% on LLaMA3.1-8B-Instruct compared to auto-regressive methods, with significant efficiency gains across various benchmarks.
+- **Generalization**: Demonstrates scalability and effectiveness across different LLM sizes (3B to 70B) and diverse computational budgets, maintaining superior performance compared to strong baselines.",,,
+23/03/2025,https://arxiv.org/abs/2503.12590,,,Method,Processed,,,,,"The document presents ""Personalize Anything,"" a training-free framework for personalized image generation using Diffusion Transformers (DiTs). It highlights advancements in generating high-fidelity images tailored to user-specified concepts without the need for extensive training or fine-tuning.
+
+- **Framework Overview**: Utilizes token replacement and patch perturbation strategies to achieve personalized image generation.
+- **Key Techniques**: Employs timestep-adaptive token replacement for subject consistency and enhances flexibility through multi-modal attention.
+- **Versatility**: Supports single and multi-subject personalization, subject-scene composition, and inpainting/outpainting.
+- **Performance**: Demonstrates superior identity preservation and image quality compared to existing methods, validated through comprehensive evaluations and user studies.
+- **Applications**: Extensible to layout-guided generation and various editing tasks, redefining scalable customization in generative AI.",,,
