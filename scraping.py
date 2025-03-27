@@ -134,10 +134,11 @@ def update_csv_from_reddit(csv_file):
 
     blank_columns = [''] * (len(headers) - 2)
 
-    with open('reddit.csv', mode='w', newline='') as file:
+    with open(csv_file, mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(headers)
+        #writer.writerow(headers)
         for topic in topics:
             writer.writerow([today,topic['links'][0]] + blank_columns)
 
-update_csv_from_reddit('AI takeaways benchmark.csv')
+if __name__ == "__main__":
+    update_csv_from_reddit('AI takeaways benchmark.csv')

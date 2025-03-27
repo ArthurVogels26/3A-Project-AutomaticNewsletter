@@ -1,27 +1,40 @@
 import os
 import pandas as pd
+import csv
 from data_extractor import DataExtractor
 from data_classifier import DataClassifier
 from summarizerAgent import generate_summary, classify_document
 from evaluate_rouge import evaluate_summary_with_original
 from huggingface_automatic_scraping import update_csv_from_huggingface
-# from scraping import update_csv_from_reddit
+from scraping import update_csv_from_reddit
 
 # Constants for configuration
-SCRAP_REDDIT=False
+SCRAP_REDDIT=True
 SCRAP_HUGGINGFACE=True
 INPUT_FILE = "new_summaries.csv"
 # INPUT_FILE = "AI takeaways benchmark.csv" ##used for evaluation only
 CALCULATE_ROUGE = False  # used for evaluation only
 HUGGINGFACE_MAIN_PAGE_ID = "week/2025-W12" # month/2025-03 for March 2025 or week/2025-W12 for week 12 of 2025
-
+headers = ['Reception date','Link','Review priority','Category (Illuin)','Category AI','Status','Reviewed','Topic / Keywords (Illuin)','Topic / Keywords AI','Take-away (Illuin)','Take-away AI','rouge1 precision','rouge2 precision','rougeL precision']
 #automatic scraping
 def scrape_data():
+    # Create file Headers
+    new_file = 0
+    with open(INPUT_FILE, mode='r', newline='') as file:
+        reader = csv.reader(file)
+        if next(reader,None) == None:
+            new_file = 1
+    
+    if new_file:
+        with open(INPUT_FILE, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(headers)
+
     if SCRAP_HUGGINGFACE:
         update_csv_from_huggingface(INPUT_FILE, max_papers=20, main_page_id=HUGGINGFACE_MAIN_PAGE_ID)
 
-    # if SCRAP_REDDIT:
-    #     update_csv_from_reddit(INPUT_FILE)
+    if SCRAP_REDDIT:
+        update_csv_from_reddit(INPUT_FILE)
 
 # Function to process a document
 def process_document(row, extractor, classifier):
