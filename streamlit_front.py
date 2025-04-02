@@ -4,7 +4,7 @@ import data_extractor as d_ex
 import data_classifier as d_c
 from summarizerAgent import generate_summary, criticize_summary, classify_document
 from evaluate_rouge import evaluate_summary_with_original
-from datetime import datetime
+from datetime import datetime, date,timedelta
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -14,6 +14,7 @@ from arxiv_automated_scrapping.arxiv_latest_scrapping import (
     filter_articles_by_keywords_multi
 )
 from scraping import get_entries_from_reddit
+from huggingface_automatic_scraping import get_entries_from_huggingface
 
 # Configuration de la page
 st.set_page_config(
@@ -312,7 +313,7 @@ def show_home_page():
         st.markdown("### Recherche Automatique sur HuggingFace")
         st.write("Extrait les derniers articles en vogue de HuggingFace pour les résumer.")
         if st.button("Auto-Extraction HuggingFace 🤖", key="btn_huggingface", use_container_width=True):
-            navigate_to('#TODO')
+            navigate_to('huggingface_scraper')
 
     with col4:
         st.markdown("### Recherche Automatique sur Reddit")
@@ -598,14 +599,92 @@ def show_reddit_scraper_page():
             for index, row in df.iterrows():
                 col1, col2 = st.columns([4,1])
                 with col1:
-                    st.markdown(f'**{row['Titre']}**')
+                    st.markdown(f"**{row['Titre']}**")
                     st.text(row['Text'][:100]+"...")
                 with col2:
                     if st.button("🔍 Analyser", key=row['Liens']):
                         st.session_state.selected_url = row['Liens']
                         navigate_to('regular_extraction')
 
-            
+def show_huggingface_scraper_page():
+    """Page de scraping automatique des articles HuggingFace"""
+    st.title("Recherche sur HuggingFace 🧠")
+
+    if st.button("← Retour à l'accueil", key="home_from_huggingface"):
+        navigate_to('home')
+
+    st.markdown("""
+    Retrouvez ici les dernières publications d'articles partagés sur HuggingFace Papers.
+    Sélectionnez la période puis cliquez sur "Rechercher maintenant" pour récupérer les articles.
+    """)
+
+    mode = st.radio("Choisissez la périodicité :", ["Hebdomadaire", "Mensuel"], horizontal=True)
+
+    selected_year = st.selectbox("Année :", list(range(2025, 2019, -1)), index=0)
+
+    if mode == "Hebdomadaire":
+        selected_week = st.number_input("Semaine de l'année :", min_value=1, max_value=52, value=12, step=1)
+        main_page_id = f"week/{selected_year}-W{selected_week:02d}"
+        start_of_week = date.fromisocalendar(selected_year, selected_week, 1)  # Monday
+        end_of_week = start_of_week + timedelta(days=6)
+
+        st.caption(f"📅 Du {start_of_week.strftime('%d %B %Y')} au {end_of_week.strftime('%d %B %Y')}")
+    else:
+        months = {
+            "Janvier": "01", "Février": "02", "Mars": "03", "Avril": "04",
+            "Mai": "05", "Juin": "06", "Juillet": "07", "Août": "08",
+            "Septembre": "09", "Octobre": "10", "Novembre": "11", "Décembre": "12"
+        }
+        month_names = list(months.keys())
+        selected_month_name = st.selectbox("Mois :", month_names, index=2)
+        selected_month = months[selected_month_name]
+        main_page_id = f"month/{selected_year}-{selected_month}"
+
+    search_button = st.button("🔍 Rechercher maintenant")
+
+    if search_button:
+        with st.spinner(f"Récupération des articles pour {main_page_id}..."):
+            try:
+                posts = get_entries_from_huggingface(main_page_id=main_page_id)
+                st.session_state.huggingface_posts = posts
+            except Exception as e:
+                st.error(f"Erreur : {e}")
+                return
+
+    if st.session_state.get("huggingface_posts"):
+        hf_posts = st.session_state.huggingface_posts
+
+        st.success(f"✅ {len(hf_posts)} articles HuggingFace trouvés")
+        st.subheader("Articles HuggingFace")
+
+        table_data = []
+        for idx, post in enumerate(hf_posts):
+            title = post.get('title', f"Paper {idx}")
+            text = post.get('content', '')
+            link = post.get('links', [''])[0]
+
+            table_data.append({
+                "Index": idx,
+                "Lien": link,
+                "Titre": title,
+                "Texte": text
+            })
+
+        df = pd.DataFrame(table_data)
+
+        for index, row in df.iterrows():
+            col1, col2 = st.columns([4, 1])
+            with col1:
+                st.markdown(f"**{row['Titre']}**")
+                st.text(row['Texte'][:100] + "...")
+            with col2:
+                if row['Lien']:
+                    if st.button("🔍 Analyser", key="hf_" + row['Lien']):
+                        st.session_state.selected_url = row['Lien']
+                        navigate_to('regular_extraction')
+                else:
+                    st.markdown("🔗 Lien manquant")
+                                
 def process_data_pipeline():
     """
     Affiche l'interface UNIFIÉE de traitement pour les données extraites,
@@ -736,6 +815,7 @@ def main():
         'arxiv_scraper': show_arxiv_scraper_page,
         'process_data': process_data_pipeline,
         'reddit_scraper': show_reddit_scraper_page,
+        'huggingface_scraper': show_huggingface_scraper_page,
     }
     
     # Afficher la page actuelle ou par défaut la page d'accueil

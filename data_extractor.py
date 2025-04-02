@@ -50,7 +50,8 @@ class DataExtractor:
         return {
             'title': title,
             'content': content,
-            'metadata': metadata
+            'metadata': metadata,
+            'links': [f'https://arxiv.org/abs/{arxiv_id}']
         }
 
     def extract_github(self, repo_url):
