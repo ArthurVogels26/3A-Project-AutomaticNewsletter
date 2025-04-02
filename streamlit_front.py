@@ -13,6 +13,7 @@ from arxiv_automated_scrapping.arxiv_latest_scrapping import (
     get_latest_arxiv_articles,
     filter_articles_by_keywords_multi
 )
+from scraping import get_entries_from_reddit
 
 # Configuration de la page
 st.set_page_config(
@@ -28,6 +29,8 @@ if 'arxiv_articles' not in st.session_state:
     st.session_state.arxiv_articles = None
 if 'selected_article' not in st.session_state:
     st.session_state.selected_article = None
+if 'selected_url' not in st.session_state:
+    st.session_state.selected_url = None
 
 #-------------------- FONCTIONS UTILITAIRES --------------------#
 
@@ -315,7 +318,7 @@ def show_home_page():
         st.markdown("### Recherche Automatique sur Reddit")
         st.write("Extrait les derniers articles en vogue de Reddit pour les résumer.")
         if st.button("Auto-Extraction Reddit 🤖", key="btn_reddit", use_container_width=True):
-            navigate_to('#TODO')
+            navigate_to('reddit_scraper')
 
 def show_regular_extraction_page():
     """Page d'extraction par URL"""
@@ -326,15 +329,21 @@ def show_regular_extraction_page():
         navigate_to('home')
 
     # Entrée utilisateur
-    url_or_id = st.text_input("Entrez l'URL ou l'identifiant de la ressource :", placeholder="Exemple : https://arxiv.org/abs/1234.56789")
+    if not st.session_state.selected_url:
+        url_or_id = st.text_input("Entrez l'URL ou l'identifiant de la ressource :", placeholder="Exemple : https://arxiv.org/abs/1234.56789")
 
-    # Bouton pour lancer l'extraction
-    if st.button("Extraire les données 🚀", key='extract_button'):
-        if url_or_id.strip() == "":
-            st.warning("Veuillez entrer un lien ou un identifiant valide.")
-        else:
-            data, category, success = extract_data_from_url(url_or_id)
-            process_extraction(data, category, success, 'regular_extraction')
+        # Bouton pour lancer l'extraction
+        if st.button("Extraire les données 🚀", key='extract_button'):
+            if url_or_id.strip() == "":
+                st.warning("Veuillez entrer un lien ou un identifiant valide.")
+            else:
+                data, category, success = extract_data_from_url(url_or_id)
+                process_extraction(data, category, success, 'regular_extraction')
+    
+    else:
+        data, category, success = extract_data_from_url(st.session_state.selected_url)
+        st.session_state.selected_url = None
+        process_extraction(data, category, success, 'regular_extraction')
 
 def show_arxiv_scraper_page():
     """Page du scrapper ArXiv"""
@@ -551,6 +560,52 @@ def show_arxiv_scraper_page():
             # que celles récupérées initialement
             display_arxiv_articles(st.session_state.arxiv_articles, "Tous les articles récupérés")
 
+def show_reddit_scraper_page():
+    """Page du scrapper Reddit"""
+    st.title("Recherche sur Reddit ")
+
+    # Bouton de retour
+    if st.button("← Retour à l'accueil", key="home_from_reddit"):
+        navigate_to('home')
+
+    st.markdown("""
+    Recherchez et filtrez les articles récents de Reddit.
+    """)
+
+    with st.spinner("Recupération des posts en cours..."):
+        try:
+            posts = get_entries_from_reddit()
+            st.session_state.reddit_posts = posts
+        except Exception as e:
+            st.error(f"Erreur : {e}")
+
+        if st.session_state.reddit_posts:
+            reddit_posts = st.session_state.reddit_posts
+
+            st.success(f"✅ {len(reddit_posts)} posts trouvés")
+
+            st.subheader("Reddit Posts")
+
+            df = pd.DataFrame([{
+                "Index": idx,
+                "Liens": post['links'][0],
+                "Titre": post['title'],
+                "Text": post['text']
+            } for idx, post in enumerate(reddit_posts)])
+ 
+            #st.dataframe(df, use_container_width=True)
+
+            for index, row in df.iterrows():
+                col1, col2 = st.columns([4,1])
+                with col1:
+                    st.markdown(f'**{row['Titre']}**')
+                    st.text(row['Text'][:100]+"...")
+                with col2:
+                    if st.button("🔍 Analyser", key=row['Liens']):
+                        st.session_state.selected_url = row['Liens']
+                        navigate_to('regular_extraction')
+
+            
 def process_data_pipeline():
     """
     Affiche l'interface UNIFIÉE de traitement pour les données extraites,
@@ -562,9 +617,33 @@ def process_data_pipeline():
     source = st.session_state.extracted_data.get("source", "unknown")
     if source == "arxiv":
         if st.button("← Retour à la recherche ArXiv", key="back_to_source"):
+            if "extracted_data" in st.session_state:
+                del st.session_state.extracted_data
+
+            if "summary" in st.session_state:
+                del st.session_state.summary
+            
+            if "review" in st.session_state:
+                del st.session_state.review
+            
+            if "rouge_scores" in st.session_state:
+                del st.session_state.rouge_scores
+
             navigate_to('arxiv_scraper')
     else:
         if st.button("← Retour à l'extraction par URL", key="back_to_source"):
+            if "extracted_data" in st.session_state:
+                del st.session_state.extracted_data
+
+            if "summary" in st.session_state:
+                del st.session_state.summary
+            
+            if "review" in st.session_state:
+                del st.session_state.review
+            
+            if "rouge_scores" in st.session_state:
+                del st.session_state.rouge_scores
+                
             navigate_to('regular_extraction')
     
     # Afficher les données extraites
@@ -655,7 +734,8 @@ def main():
         'home': show_home_page,
         'regular_extraction': show_regular_extraction_page,
         'arxiv_scraper': show_arxiv_scraper_page,
-        'process_data': process_data_pipeline
+        'process_data': process_data_pipeline,
+        'reddit_scraper': show_reddit_scraper_page,
     }
     
     # Afficher la page actuelle ou par défaut la page d'accueil
