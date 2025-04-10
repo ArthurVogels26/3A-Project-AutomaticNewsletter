@@ -1,7 +1,7 @@
 from langchain_ollama import OllamaLLM
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-import data_extractor as d_ex
+import processing.data_extractor as d_ex
 import openai
 import os
 from dotenv import load_dotenv

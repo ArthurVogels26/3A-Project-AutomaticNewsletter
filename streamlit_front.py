@@ -1,20 +1,20 @@
 import streamlit as st
 import pandas as pd
-import data_extractor as d_ex
-import data_classifier as d_c
-from summarizerAgent import generate_summary, criticize_summary, classify_document
-from evaluate_rouge import evaluate_summary_with_original
+import processing.data_extractor as d_ex
+import processing.data_classifier as d_c
+from summarization.summarizerAgent import generate_summary, criticize_summary, classify_document
+from summarization.evaluate_rouge import evaluate_summary_with_original
 from datetime import datetime, date,timedelta
 import time
 import requests
 from bs4 import BeautifulSoup
 import re
-from arxiv_automated_scrapping.arxiv_latest_scrapping import (
+from scraping.arxiv_automated_scrapping.arxiv_latest_scrapping import (
     get_latest_arxiv_articles,
     filter_articles_by_keywords_multi
 )
-from scraping import get_entries_from_reddit
-from huggingface_automatic_scraping import get_entries_from_huggingface
+from scraping.reddit_scraping import get_entries_from_reddit
+from scraping.huggingface_automatic_scraping import get_entries_from_huggingface
 
 # Configuration de la page
 st.set_page_config(
