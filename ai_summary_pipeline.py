@@ -1,18 +1,18 @@
 import os
 import pandas as pd
 import csv
-from data_extractor import DataExtractor
-from data_classifier import DataClassifier
-from summarizerAgent import generate_summary, classify_document
-from evaluate_rouge import evaluate_summary_with_original
-from huggingface_automatic_scraping import update_csv_from_huggingface
-from scraping import update_csv_from_reddit
+from processing.data_extractor import DataExtractor
+from processing.data_classifier import DataClassifier
+from summarization.summarizerAgent import generate_summary, classify_document
+from summarization.evaluate_rouge import evaluate_summary_with_original
+from scraping.huggingface_automatic_scraping import update_csv_from_huggingface
+from scraping.reddit_scraping import update_csv_from_reddit
 
 # Constants for configuration
 SCRAP_REDDIT=True
 SCRAP_HUGGINGFACE=True
-INPUT_FILE = "new_summaries.csv"
-# INPUT_FILE = "AI takeaways benchmark.csv" ##used for evaluation only
+INPUT_FILE = "./output/new_summaries.csv"
+# INPUT_FILE = "./output/AI takeaways benchmark.csv" ##used for evaluation only
 CALCULATE_ROUGE = False  # used for evaluation only
 HUGGINGFACE_MAIN_PAGE_ID = "week/2025-W12" # month/2025-03 for March 2025 or week/2025-W12 for week 12 of 2025
 headers = ['Reception date','Link','Review priority','Category (Illuin)','Category AI','Status','Reviewed','Topic / Keywords (Illuin)','Topic / Keywords AI','Take-away (Illuin)','Take-away AI','rouge1 precision','rouge2 precision','rougeL precision']

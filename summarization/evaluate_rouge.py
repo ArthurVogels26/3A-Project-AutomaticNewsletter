@@ -1,6 +1,6 @@
 from rouge_score import rouge_scorer
-import data_extractor as d_ex
-from summarizerAgent import generate_summary
+import processing.data_extractor as d_ex
+from summarization.summarizerAgent import generate_summary
 
 def evaluate_summary_with_original(generated_summary: str, original_content: str):
 

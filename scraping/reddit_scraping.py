@@ -141,4 +141,4 @@ def update_csv_from_reddit(csv_file):
             writer.writerow([today,topic['links'][0]] + blank_columns)
 
 if __name__ == "__main__":
-    update_csv_from_reddit('reddit.csv')
+    update_csv_from_reddit('./output/reddit.csv')

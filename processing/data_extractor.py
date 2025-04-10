@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import os
 import pymupdf
 from urllib.parse import urlparse
-from extracted_data import ExtractedData
+from processing.extracted_data import ExtractedData
 
 class DataExtractor:
     def __init__(self):
