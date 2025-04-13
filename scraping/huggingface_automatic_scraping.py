@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 from datetime import datetime
 import re
-from data_extractor import DataExtractor
+from processing.data_extractor import DataExtractor
 
 extractor=DataExtractor()
 

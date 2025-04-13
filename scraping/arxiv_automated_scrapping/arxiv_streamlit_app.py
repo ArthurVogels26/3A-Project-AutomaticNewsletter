@@ -4,7 +4,7 @@ import json
 import time
 from datetime import datetime, timezone, timedelta
 import os
-from arxiv_latest_scrapping import (
+from scraping.arxiv_automated_scrapping.arxiv_latest_scrapping import (
     get_latest_arxiv_articles,
     filter_articles_by_keywords_multi
 )
