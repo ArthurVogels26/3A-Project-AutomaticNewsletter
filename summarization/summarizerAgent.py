@@ -28,18 +28,19 @@ def classify_document(data, gpt = True) -> str:
 
     Here is a description of the different classes:
 
-    - Model: You will classify a document as Model if the document present a machine learning model or a new neural network architecture. 
-    - Method: You will classify a document as Method if it present a way of doing a specific thing, such as an evaluation method, a training method or any other process.
-    - Dataset: You will classify a document as Dataset if the document present a Dataset, a collection of data.
-    - Library: You will classify a document as a Library if the document present a new library, or module in any programming language. A repository containing a collection of code that can be used to perform a task can be seen as a Library too. 
-    - Tips and Tricks: You will classify as Tips and Tricks a document that presents tips about something, tips and tricks are lighter than a whole method.
+    - Model: You will classify a document as Model if the document present a new architecture or network defining a new generative model.  
+    - Method: You will classify a document as Method if it present a specific approach or technique used to build models or used to solve a specific problem
+    - Dataset: You will classify a document as Dataset if the document present a Database, a collection of data.
+    - Library: You will classify a document as a Library if the document present a new module, a collection of code that can be used directly to help you perform a task. 
+    - Tips and Tricks: You will classify as Tips and Tricks a document that presents good practices on a topic , tips and tricks are lighter than a whole method.
     - Pedagogy: You will classify as Pedagogy a document that compile information from different source on a subject in order to give pedagogical overview of the concept. A survey on different deep learning approaches to solve a problem, a collection of ressources on a thematic or a course on Deep Learning should be considered as Pedagogy.
 
     Your answer should only contain the class and nothing else.
 
     Exemple:
     Question: What is the class of this document?
-    Answer: Method
+    document: The MNIST database (Modified National Institute of Standards and Technology database[1]) is a large database of handwritten digits that is commonly used for training various image processing systems.
+    Answer: Dataset
     """
     prompt = ChatPromptTemplate.from_template(template)
     chain = prompt | model
@@ -64,11 +65,13 @@ def generate_summary(data: str, gpt = True) -> str:
         model = OllamaLLM(model="llama3.2")
 
     template = """
-    Summarize the following text: {text}
+    You are given a text to summarize.
 
     Your summary should follow this structure: At first, explain the context of the document, what the document is about.
-    Then, make bullet points summarizing the principal topics of the document. It could be about the model used, the method used, the results or other topics you consider relevent.
-    The summary should be very concise: maximum 150 words
+    Then, make bullet points summarizing the principal topics of the document. It could be about the model used, the method used, the results or other topics that are relevent.
+    The summary should contain a maximum of 150 words.
+
+    Here is the text to summarize: {text}
     """
     prompt = ChatPromptTemplate.from_template(template)
     chain = prompt | model
